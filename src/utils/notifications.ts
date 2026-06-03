@@ -56,13 +56,20 @@ export const triggerHapticFeedback = async (type: 'success' | 'warning' | 'error
 // 触发强烈震动（用于计时完成）
 export const triggerStrongHaptic = async (): Promise<void> => {
   try {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    // 使用 notificationAsync 而非 impactAsync：
+    // impactAsync 在 Android 上依赖系统"触摸震动"设置，很多设备默认关闭
+    // notificationAsync 使用 VibrationEffect，不依赖系统设置，更可靠
+    await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
     // 延迟再次震动以产生节奏感
     setTimeout(async () => {
-      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+      try {
+        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+      } catch (_) {}
     }, 200);
     setTimeout(async () => {
-      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+      try {
+        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+      } catch (_) {}
     }, 400);
   } catch (error) {
     // 静默处理

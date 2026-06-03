@@ -239,8 +239,11 @@ export const useTimerStore = create<TimerState>((set, get) => ({
   completePomodoro: () => {
     const { mode, pomodoroCount } = get();
 
-    // 震动反馈
-    triggerStrongHaptic();
+    // 震动反馈（如果启用）
+    const settings = useSettingStore.getState();
+    if (settings.hapticsEnabled) {
+      triggerStrongHaptic();
+    }
 
     // 取消通知
     cancelAllNotifications();
