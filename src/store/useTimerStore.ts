@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { TimerMode, TimerState as BaseTimerState } from '../types';
 import { saveTimerState, clearTimerState } from '../utils/storage';
 import { scheduleTimerCompleteNotification, cancelAllNotifications, triggerStrongHaptic } from '../utils/notifications';
+import { navigate } from '../utils/navigation';
 import { useSettingStore } from './useSettingStore';
 
 interface TimerState extends BaseTimerState {
@@ -253,12 +254,13 @@ export const useTimerStore = create<TimerState>((set, get) => ({
       const newCount = pomodoroCount + 1;
       set({ pomodoroCount: newCount });
 
-      // 切换到休息模式
-      // 每4个番茄后长休息，否则短休息
-      const nextMode = newCount % 4 === 0 ? 'longBreak' : 'shortBreak';
+      // 根据设置选择休息类型，自动开始休息
+      const nextMode = settings.breakType === 'long' ? 'longBreak' : 'shortBreak';
       get().setMode(nextMode);
+      get().start();
+      navigate('Timer');
     } else {
-      // 休息完成，切换回专注模式
+      // 休息完成，切换回专注模式（不自动开始）
       get().setMode('focus');
     }
   },

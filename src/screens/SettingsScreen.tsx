@@ -146,13 +146,13 @@ const SettingsScreen: React.FC = () => {
     focusDuration,
     shortBreakDuration,
     longBreakDuration,
-    longBreakInterval,
+    breakType,
     hapticsEnabled,
     theme: currentTheme,
     setFocusDuration,
     setShortBreakDuration,
     setLongBreakDuration,
-    setLongBreakInterval,
+    setBreakType,
     toggleHaptics,
     setTheme,
   } = useSettingStore();
@@ -192,33 +192,44 @@ const SettingsScreen: React.FC = () => {
     );
   };
 
-  // 间隔选择组件
-  const IntervalSelector: React.FC = () => {
-    const options = [3, 4, 5, 6];
-
+  // 休息类型选择组件
+  const BreakTypeSelector: React.FC = () => {
     return (
       <View style={styles.settingRow}>
-        <Text style={styles.settingLabel}>长休息间隔</Text>
+        <Text style={styles.settingLabel}>休息类型</Text>
         <View style={styles.intervalSelector}>
-          {options.map((option) => (
-            <TouchableOpacity
-              key={option}
+          <TouchableOpacity
+            style={[
+              styles.intervalButton,
+              breakType === 'short' && styles.intervalButtonActive,
+            ]}
+            onPress={() => setBreakType('short')}
+          >
+            <Text
               style={[
-                styles.intervalButton,
-                longBreakInterval === option && styles.intervalButtonActive,
+                styles.intervalButtonText,
+                breakType === 'short' && styles.intervalButtonTextActive,
               ]}
-              onPress={() => setLongBreakInterval(option)}
             >
-              <Text
-                style={[
-                  styles.intervalButtonText,
-                  longBreakInterval === option && styles.intervalButtonTextActive,
-                ]}
-              >
-                {option}
-              </Text>
-            </TouchableOpacity>
-          ))}
+              短休息
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.intervalButton,
+              breakType === 'long' && styles.intervalButtonActive,
+            ]}
+            onPress={() => setBreakType('long')}
+          >
+            <Text
+              style={[
+                styles.intervalButtonText,
+                breakType === 'long' && styles.intervalButtonTextActive,
+              ]}
+            >
+              长休息
+            </Text>
+          </TouchableOpacity>
         </View>
       </View>
     );
@@ -300,7 +311,7 @@ const SettingsScreen: React.FC = () => {
           unit="分钟"
         />
 
-        <IntervalSelector />
+        <BreakTypeSelector />
       </View>
 
       {/* 反馈设置 */}

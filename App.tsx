@@ -11,6 +11,7 @@ import TasksScreen from './src/screens/TasksScreen';
 import StatsScreen from './src/screens/StatsScreen';
 import SettingsScreen from './src/screens/SettingsScreen';
 import { ThemeProvider, useTheme } from './src/contexts/ThemeContext';
+import { navigationRef } from './src/utils/navigation';
 
 const Tab = createBottomTabNavigator();
 
@@ -18,7 +19,7 @@ function AppContent() {
   const { theme, isDark } = useTheme();
 
   return (
-    <NavigationContainer>
+    <NavigationContainer ref={navigationRef}>
       <StatusBar style={isDark ? 'light' : 'dark'} />
       <Tab.Navigator
         screenOptions={{

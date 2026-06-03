@@ -9,7 +9,7 @@ interface SettingState extends Settings {
   setFocusDuration: (minutes: number) => void;
   setShortBreakDuration: (minutes: number) => void;
   setLongBreakDuration: (minutes: number) => void;
-  setLongBreakInterval: (interval: number) => void;
+  setBreakType: (type: 'short' | 'long') => void;
   toggleNotifications: () => void;
   toggleHaptics: () => void;
   setTheme: (theme: 'light' | 'dark') => void;
@@ -21,6 +21,7 @@ const DEFAULT_SETTINGS: Settings = {
   shortBreakDuration: 5,
   longBreakDuration: 15,
   longBreakInterval: 4,
+  breakType: 'short',
   notificationsEnabled: true,
   hapticsEnabled: true,
   theme: 'light',
@@ -60,9 +61,9 @@ export const useSettingStore = create<SettingState>((set, get) => ({
     get().updateSettings({ longBreakDuration: minutes });
   },
 
-  // 设置长休息间隔
-  setLongBreakInterval: (interval: number) => {
-    get().updateSettings({ longBreakInterval: interval });
+  // 设置休息类型
+  setBreakType: (type: 'short' | 'long') => {
+    get().updateSettings({ breakType: type });
   },
 
   // 切换通知开关

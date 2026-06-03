@@ -23,7 +23,8 @@ export interface Settings {
   focusDuration: number; // 专注时长（分钟）
   shortBreakDuration: number; // 短休息时长（分钟）
   longBreakDuration: number; // 长休息时长（分钟）
-  longBreakInterval: number; // 每几个番茄后触发长休息
+  longBreakInterval: number; // 每几个番茄后触发长休息（已弃用，保留兼容）
+  breakType: 'short' | 'long'; // 休息类型：短休息或长休息
   notificationsEnabled: boolean; // 通知开关
   hapticsEnabled: boolean; // 震动开关
   theme: 'light' | 'dark'; // 主题
