@@ -4,6 +4,8 @@ import { saveTimerState, clearTimerState } from '../utils/storage';
 import { scheduleTimerCompleteNotification, cancelAllNotifications, triggerStrongHaptic } from '../utils/notifications';
 import { navigate } from '../utils/navigation';
 import { useSettingStore } from './useSettingStore';
+import { useStatsStore } from './useStatsStore';
+import { useTaskStore } from './useTaskStore';
 
 interface TimerState extends BaseTimerState {
   // 初始时长（秒）
@@ -253,6 +255,15 @@ export const useTimerStore = create<TimerState>((set, get) => ({
       // 专注完成，更新番茄计数
       const newCount = pomodoroCount + 1;
       set({ pomodoroCount: newCount });
+
+      // 记录统计数据（必须在 setMode 之前，因为 setMode 会重置 initialSeconds）
+      const focusDuration = get().initialSeconds;
+      const currentTaskId = get().currentTaskId;
+      useStatsStore.getState().addFocusTime(focusDuration);
+      useStatsStore.getState().addPomodoro();
+      if (currentTaskId) {
+        useTaskStore.getState().incrementTaskPomodoro(currentTaskId);
+      }
 
       // 根据设置选择休息类型，自动开始休息
       const nextMode = settings.breakType === 'long' ? 'longBreak' : 'shortBreak';

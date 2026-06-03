@@ -9,7 +9,6 @@ import {
 } from 'react-native';
 import { useTimerStore } from '../store/useTimerStore';
 import { useTaskStore } from '../store/useTaskStore';
-import { useStatsStore } from '../store/useStatsStore';
 import { useSettingStore } from '../store/useSettingStore';
 import { useTheme } from '../contexts/ThemeContext';
 import CircularProgress from '../components/CircularProgress';
@@ -140,8 +139,7 @@ const TimerScreen: React.FC = () => {
     updateDurations,
   } = useTimerStore();
 
-  const { tasks, getCurrentTask, incrementTaskPomodoro } = useTaskStore();
-  const { addFocusTime, addPomodoro } = useStatsStore();
+  const { tasks, getCurrentTask } = useTaskStore();
 
   // 获取设置store的值用于监听变化
   const { focusDuration, shortBreakDuration, longBreakDuration } = useSettingStore();
@@ -207,23 +205,6 @@ const TimerScreen: React.FC = () => {
       }
     };
   }, [isRunning, tick]);
-
-  // 监听计时结束
-  useEffect(() => {
-    if (remainingSeconds === 0 && !isRunning) {
-      // 计时结束时添加统计数据
-      if (mode === 'focus') {
-        const focusTime = initialSeconds;
-        addFocusTime(focusTime);
-        addPomodoro();
-
-        // 如果有当前任务，增加番茄数
-        if (currentTaskId) {
-          incrementTaskPomodoro(currentTaskId);
-        }
-      }
-    }
-  }, [remainingSeconds, isRunning, mode, initialSeconds, currentTaskId]);
 
   const currentTask = getCurrentTask();
 

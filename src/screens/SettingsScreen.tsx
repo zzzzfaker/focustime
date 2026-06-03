@@ -350,7 +350,7 @@ const SettingsScreen: React.FC = () => {
             使用番茄工作法提升你的专注力
           </Text>
           <Text style={styles.aboutNote}>
-            注意：通知功能需要独立构建，Expo Go 暂不支持
+            移动应用开发课程项目 张付 2022211396
           </Text>
         </View>
       </View>
