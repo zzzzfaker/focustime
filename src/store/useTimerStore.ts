@@ -49,7 +49,7 @@ export const useTimerStore = create<TimerState>((set, get) => ({
 
   // 开始计时
   start: () => {
-    const { mode, initialSeconds, remainingSeconds } = get();
+    const { mode, remainingSeconds } = get();
     const now = Date.now();
 
     set({
@@ -76,18 +76,14 @@ export const useTimerStore = create<TimerState>((set, get) => ({
 
   // 暂停计时
   pause: () => {
-    const { startTime, remainingSeconds, initialSeconds } = get();
+    const { remainingSeconds } = get();
     const now = Date.now();
-
-    // 计算已经过去的秒数
-    const elapsed = startTime ? Math.floor((now - startTime) / 1000) : 0;
-    const newRemaining = Math.max(0, remainingSeconds - elapsed);
 
     set({
       isRunning: false,
       startTime: null,
       pausedAt: now,
-      remainingSeconds: newRemaining,
+      // remainingSeconds 已经被 tick 更新，直接使用当前值
     });
 
     // 取消通知
@@ -96,7 +92,7 @@ export const useTimerStore = create<TimerState>((set, get) => ({
     // 保存暂停状态
     saveTimerState({
       mode: get().mode,
-      remainingSeconds: newRemaining,
+      remainingSeconds,
       startTime: null,
       pausedAt: now,
     });
@@ -118,13 +114,12 @@ export const useTimerStore = create<TimerState>((set, get) => ({
 
   // 每秒更新（timer tick）
   tick: () => {
-    const { isRunning, startTime, remainingSeconds, initialSeconds } = get();
+    const { isRunning, remainingSeconds } = get();
 
-    if (!isRunning || !startTime) return;
+    if (!isRunning) return;
 
-    const now = Date.now();
-    const elapsed = Math.floor((now - startTime) / 1000);
-    const newRemaining = Math.max(0, initialSeconds - elapsed);
+    // 每秒递减剩余时间
+    const newRemaining = Math.max(0, remainingSeconds - 1);
 
     set({ remainingSeconds: newRemaining });
 
@@ -178,14 +173,16 @@ export const useTimerStore = create<TimerState>((set, get) => ({
 
   // 处理应用状态变化（后台/前台切换）
   handleAppStateChange: (nextAppState: string) => {
-    const { isRunning, startTime, pausedAt, mode, remainingSeconds, initialSeconds } = get();
+    const { isRunning, startTime, pausedAt, mode, remainingSeconds } = get();
     const now = Date.now();
 
     if (nextAppState === 'background' || nextAppState === 'inactive') {
       // 进入后台
       if (isRunning && startTime) {
+        // 计算从开始到现在经过了多少时间
         const elapsed = Math.floor((now - startTime) / 1000);
-        const newRemaining = Math.max(0, initialSeconds - elapsed);
+        // 从当前剩余时间中减去经过的时间
+        const newRemaining = Math.max(0, remainingSeconds - elapsed);
         set({
           remainingSeconds: newRemaining,
           pausedAt: now,
