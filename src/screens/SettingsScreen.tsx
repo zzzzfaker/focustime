@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import {
   View,
   Text,
@@ -6,10 +6,8 @@ import {
   TouchableOpacity,
   Switch,
   ScrollView,
-  Alert,
 } from 'react-native';
 import { useSettingStore } from '../store/useSettingStore';
-import { requestNotificationPermissions } from '../utils/notifications';
 
 const SettingsScreen: React.FC = () => {
   const {
@@ -17,43 +15,15 @@ const SettingsScreen: React.FC = () => {
     shortBreakDuration,
     longBreakDuration,
     longBreakInterval,
-    notificationsEnabled,
     hapticsEnabled,
     theme,
     setFocusDuration,
     setShortBreakDuration,
     setLongBreakDuration,
     setLongBreakInterval,
-    toggleNotifications,
     toggleHaptics,
     setTheme,
   } = useSettingStore();
-
-  // 检查通知权限状态
-  useEffect(() => {
-    checkNotificationPermission();
-  }, []);
-
-  const checkNotificationPermission = async () => {
-    // 这里可以检查权限状态并更新 UI
-  };
-
-  // 处理通知开关变化
-  const handleNotificationToggle = async () => {
-    if (!notificationsEnabled) {
-      // 开启通知时请求权限
-      const granted = await requestNotificationPermissions();
-      if (!granted) {
-        Alert.alert(
-          '通知权限',
-          '请在系统设置中开启通知权限，以接收计时完成提醒',
-          [{ text: '确定' }]
-        );
-        return;
-      }
-    }
-    toggleNotifications();
-  };
 
   // 时间选择项组件
   const TimeSelector: React.FC<{
@@ -201,24 +171,9 @@ const SettingsScreen: React.FC = () => {
         <IntervalSelector />
       </View>
 
-      {/* 通知与反馈 */}
+      {/* 反馈设置 */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>通知与反馈</Text>
-
-        <View style={styles.settingRow}>
-          <View style={styles.switchLabelContainer}>
-            <Text style={styles.settingLabel}>通知提醒</Text>
-            <Text style={styles.settingDescription}>
-              计时完成时发送通知
-            </Text>
-          </View>
-          <Switch
-            value={notificationsEnabled}
-            onValueChange={handleNotificationToggle}
-            trackColor={{ false: '#D1D1D6', true: '#FF6B6B' }}
-            thumbColor="#FFFFFF"
-          />
-        </View>
+        <Text style={styles.sectionTitle}>反馈设置</Text>
 
         <View style={styles.settingRow}>
           <View style={styles.switchLabelContainer}>
@@ -250,6 +205,9 @@ const SettingsScreen: React.FC = () => {
           <Text style={styles.aboutSubtext}>版本 1.0.0</Text>
           <Text style={styles.aboutSubtext}>
             使用番茄工作法提升你的专注力
+          </Text>
+          <Text style={styles.aboutNote}>
+            注意：通知功能需要独立构建，Expo Go 暂不支持
           </Text>
         </View>
       </View>
@@ -374,6 +332,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#999',
     marginBottom: 4,
+  },
+  aboutNote: {
+    fontSize: 12,
+    color: '#FF6B6B',
+    marginTop: 8,
+    fontStyle: 'italic',
   },
 });
 
