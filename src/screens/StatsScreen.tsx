@@ -2,9 +2,22 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { useStatsStore } from '../store/useStatsStore';
 import { useTaskStore } from '../store/useTaskStore';
+import { useTheme } from '../contexts/ThemeContext';
 import StatsChart from '../components/StatsChart';
 
+// 创建动态样式函数
+const createStyles = (theme: any) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.background,
+    },
+  });
+
 const StatsScreen: React.FC = () => {
+  const { theme } = useTheme();
+  const styles = createStyles(theme);
+
   const { dailyStats, totalPomodoros, totalFocusMinutes } = useStatsStore();
   const { tasks } = useTaskStore();
 
@@ -24,12 +37,5 @@ const StatsScreen: React.FC = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F8F9FA',
-  },
-});
 
 export default StatsScreen;

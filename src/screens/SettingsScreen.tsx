@@ -8,15 +8,147 @@ import {
   ScrollView,
 } from 'react-native';
 import { useSettingStore } from '../store/useSettingStore';
+import { useTheme } from '../contexts/ThemeContext';
+
+// 创建动态样式函数
+const createStyles = (theme: any) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.background,
+    },
+    section: {
+      backgroundColor: theme.card,
+      marginTop: 16,
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+    },
+    sectionTitle: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: theme.textSecondary,
+      marginBottom: 12,
+    },
+    settingRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingVertical: 12,
+      borderBottomWidth: 1,
+      borderBottomColor: theme.border,
+    },
+    settingLabel: {
+      fontSize: 16,
+      color: theme.text,
+    },
+    settingDescription: {
+      fontSize: 12,
+      color: theme.textSecondary,
+      marginTop: 4,
+    },
+    switchLabelContainer: {
+      flex: 1,
+    },
+    timeSelector: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 12,
+    },
+    timeButton: {
+      width: 36,
+      height: 36,
+      borderRadius: 18,
+      backgroundColor: theme.border,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    timeButtonText: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      color: theme.textSecondary,
+    },
+    timeValue: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: theme.primary,
+      minWidth: 60,
+      textAlign: 'center',
+    },
+    intervalSelector: {
+      flexDirection: 'row',
+      gap: 8,
+    },
+    intervalButton: {
+      paddingHorizontal: 16,
+      paddingVertical: 8,
+      borderRadius: 16,
+      backgroundColor: theme.border,
+    },
+    intervalButtonActive: {
+      backgroundColor: theme.primary,
+    },
+    intervalButtonText: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: theme.textSecondary,
+    },
+    intervalButtonTextActive: {
+      color: '#FFFFFF',
+    },
+    themeSelector: {
+      flexDirection: 'row',
+      gap: 12,
+    },
+    themeButton: {
+      paddingHorizontal: 20,
+      paddingVertical: 10,
+      borderRadius: 20,
+      backgroundColor: theme.border,
+    },
+    themeButtonActive: {
+      backgroundColor: theme.primary,
+    },
+    themeButtonText: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: theme.textSecondary,
+    },
+    themeButtonTextActive: {
+      color: '#FFFFFF',
+    },
+    aboutContainer: {
+      paddingVertical: 8,
+    },
+    aboutText: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      color: theme.text,
+      marginBottom: 4,
+    },
+    aboutSubtext: {
+      fontSize: 14,
+      color: theme.textSecondary,
+      marginBottom: 4,
+    },
+    aboutNote: {
+      fontSize: 12,
+      color: theme.primary,
+      marginTop: 8,
+      fontStyle: 'italic',
+    },
+  });
 
 const SettingsScreen: React.FC = () => {
+  const { theme } = useTheme();
+  const styles = createStyles(theme);
+
   const {
     focusDuration,
     shortBreakDuration,
     longBreakDuration,
     longBreakInterval,
     hapticsEnabled,
-    theme,
+    theme: currentTheme,
     setFocusDuration,
     setShortBreakDuration,
     setLongBreakDuration,
@@ -101,14 +233,14 @@ const SettingsScreen: React.FC = () => {
           <TouchableOpacity
             style={[
               styles.themeButton,
-              theme === 'light' && styles.themeButtonActive,
+              currentTheme === 'light' && styles.themeButtonActive,
             ]}
             onPress={() => setTheme('light')}
           >
             <Text
               style={[
                 styles.themeButtonText,
-                theme === 'light' && styles.themeButtonTextActive,
+                currentTheme === 'light' && styles.themeButtonTextActive,
               ]}
             >
               浅色
@@ -117,14 +249,14 @@ const SettingsScreen: React.FC = () => {
           <TouchableOpacity
             style={[
               styles.themeButton,
-              theme === 'dark' && styles.themeButtonActive,
+              currentTheme === 'dark' && styles.themeButtonActive,
             ]}
             onPress={() => setTheme('dark')}
           >
             <Text
               style={[
                 styles.themeButtonText,
-                theme === 'dark' && styles.themeButtonTextActive,
+                currentTheme === 'dark' && styles.themeButtonTextActive,
               ]}
             >
               深色
@@ -185,7 +317,7 @@ const SettingsScreen: React.FC = () => {
           <Switch
             value={hapticsEnabled}
             onValueChange={toggleHaptics}
-            trackColor={{ false: '#D1D1D6', true: '#FF6B6B' }}
+            trackColor={{ false: theme.border, true: theme.primary }}
             thumbColor="#FFFFFF"
           />
         </View>
@@ -214,131 +346,5 @@ const SettingsScreen: React.FC = () => {
     </ScrollView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F8F9FA',
-  },
-  section: {
-    backgroundColor: '#FFFFFF',
-    marginTop: 16,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-  },
-  sectionTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#999',
-    marginBottom: 12,
-  },
-  settingRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F0F0F0',
-  },
-  settingLabel: {
-    fontSize: 16,
-    color: '#333',
-  },
-  settingDescription: {
-    fontSize: 12,
-    color: '#999',
-    marginTop: 4,
-  },
-  switchLabelContainer: {
-    flex: 1,
-  },
-  timeSelector: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  timeButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: '#F5F5F5',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  timeButtonText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#666',
-  },
-  timeValue: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#FF6B6B',
-    minWidth: 60,
-    textAlign: 'center',
-  },
-  intervalSelector: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  intervalButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 16,
-    backgroundColor: '#F5F5F5',
-  },
-  intervalButtonActive: {
-    backgroundColor: '#FF6B6B',
-  },
-  intervalButtonText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#666',
-  },
-  intervalButtonTextActive: {
-    color: '#FFFFFF',
-  },
-  themeSelector: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  themeButton: {
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 20,
-    backgroundColor: '#F5F5F5',
-  },
-  themeButtonActive: {
-    backgroundColor: '#FF6B6B',
-  },
-  themeButtonText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#666',
-  },
-  themeButtonTextActive: {
-    color: '#FFFFFF',
-  },
-  aboutContainer: {
-    paddingVertical: 8,
-  },
-  aboutText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 4,
-  },
-  aboutSubtext: {
-    fontSize: 14,
-    color: '#999',
-    marginBottom: 4,
-  },
-  aboutNote: {
-    fontSize: 12,
-    color: '#FF6B6B',
-    marginTop: 8,
-    fontStyle: 'italic',
-  },
-});
 
 export default SettingsScreen;

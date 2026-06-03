@@ -10,9 +10,120 @@ import {
 import { useTimerStore } from '../store/useTimerStore';
 import { useTaskStore } from '../store/useTaskStore';
 import { useStatsStore } from '../store/useStatsStore';
+import { useSettingStore } from '../store/useSettingStore';
+import { useTheme } from '../contexts/ThemeContext';
 import CircularProgress from '../components/CircularProgress';
 
+// 创建动态样式函数
+const createStyles = (theme: any) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.background,
+      paddingTop: 40,
+    },
+    modeSelector: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+      marginBottom: 30,
+      paddingHorizontal: 20,
+    },
+    modeButton: {
+      paddingHorizontal: 20,
+      paddingVertical: 10,
+      marginHorizontal: 5,
+      borderRadius: 20,
+      backgroundColor: theme.border,
+    },
+    modeButtonActive: {
+      backgroundColor: theme.timer.focusColor,
+    },
+    modeButtonText: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: theme.textSecondary,
+    },
+    modeButtonTextActive: {
+      color: '#FFFFFF',
+    },
+    progressContainer: {
+      alignItems: 'center',
+      marginVertical: 20,
+    },
+    modeLabel: {
+      fontSize: 18,
+      color: theme.textSecondary,
+      marginBottom: 8,
+    },
+    timeText: {
+      fontSize: 64,
+      fontWeight: 'bold',
+      color: theme.text,
+      fontFamily: 'monospace',
+    },
+    taskLabel: {
+      fontSize: 14,
+      color: theme.textSecondary,
+      marginTop: 8,
+    },
+    pomodoroCounter: {
+      alignItems: 'center',
+      marginVertical: 20,
+    },
+    pomodoroCounterText: {
+      fontSize: 16,
+      color: theme.textSecondary,
+    },
+    controlButtons: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+      paddingHorizontal: 40,
+      gap: 20,
+    },
+    controlButton: {
+      width: 100,
+      height: 50,
+      borderRadius: 25,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    resetButton: {
+      backgroundColor: theme.border,
+    },
+    mainButton: {
+      width: 140,
+      height: 60,
+    },
+    startButton: {
+      backgroundColor: theme.primary,
+    },
+    pauseButton: {
+      backgroundColor: '#FFA726',
+    },
+    controlButtonText: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: theme.text,
+    },
+    mainButtonText: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      color: '#FFFFFF',
+    },
+    taskHint: {
+      alignItems: 'center',
+      marginTop: 30,
+    },
+    taskHintText: {
+      fontSize: 14,
+      color: theme.primary,
+    },
+  });
+
 const TimerScreen: React.FC = () => {
+  const { theme } = useTheme();
+  const styles = createStyles(theme);
+
   const {
     mode,
     remainingSeconds,
@@ -26,11 +137,14 @@ const TimerScreen: React.FC = () => {
     tick,
     setMode,
     handleAppStateChange,
-    setCurrentTaskId,
+    updateDurations,
   } = useTimerStore();
 
   const { tasks, getCurrentTask, incrementTaskPomodoro } = useTaskStore();
   const { addFocusTime, addPomodoro } = useStatsStore();
+
+  // 获取设置store的值用于监听变化
+  const { focusDuration, shortBreakDuration, longBreakDuration } = useSettingStore();
 
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -55,6 +169,11 @@ const TimerScreen: React.FC = () => {
 
   // 获取进度
   const progress = remainingSeconds / initialSeconds;
+
+  // 监听设置变化，更新计时器时长
+  useEffect(() => {
+    updateDurations();
+  }, [focusDuration, shortBreakDuration, longBreakDuration, updateDurations]);
 
   // 监听应用状态变化
   useEffect(() => {
@@ -223,109 +342,5 @@ const TimerScreen: React.FC = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F8F9FA',
-    paddingTop: 40,
-  },
-  modeSelector: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginBottom: 30,
-    paddingHorizontal: 20,
-  },
-  modeButton: {
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    marginHorizontal: 5,
-    borderRadius: 20,
-    backgroundColor: '#E0E0E0',
-  },
-  modeButtonActive: {
-    backgroundColor: '#FF6B6B',
-  },
-  modeButtonText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#666',
-  },
-  modeButtonTextActive: {
-    color: '#FFFFFF',
-  },
-  progressContainer: {
-    alignItems: 'center',
-    marginVertical: 20,
-  },
-  modeLabel: {
-    fontSize: 18,
-    color: '#666',
-    marginBottom: 8,
-  },
-  timeText: {
-    fontSize: 64,
-    fontWeight: 'bold',
-    color: '#333',
-    fontFamily: 'monospace',
-  },
-  taskLabel: {
-    fontSize: 14,
-    color: '#999',
-    marginTop: 8,
-  },
-  pomodoroCounter: {
-    alignItems: 'center',
-    marginVertical: 20,
-  },
-  pomodoroCounterText: {
-    fontSize: 16,
-    color: '#666',
-  },
-  controlButtons: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    paddingHorizontal: 40,
-    gap: 20,
-  },
-  controlButton: {
-    width: 100,
-    height: 50,
-    borderRadius: 25,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  resetButton: {
-    backgroundColor: '#E0E0E0',
-  },
-  mainButton: {
-    width: 140,
-    height: 60,
-  },
-  startButton: {
-    backgroundColor: '#FF6B6B',
-  },
-  pauseButton: {
-    backgroundColor: '#FFA726',
-  },
-  controlButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
-  },
-  mainButtonText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
-  },
-  taskHint: {
-    alignItems: 'center',
-    marginTop: 30,
-  },
-  taskHintText: {
-    fontSize: 14,
-    color: '#FF6B6B',
-  },
-});
 
 export default TimerScreen;

@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { TimerMode, TimerState as BaseTimerState } from '../types';
 import { saveTimerState, clearTimerState } from '../utils/storage';
 import { scheduleTimerCompleteNotification, cancelAllNotifications, triggerStrongHaptic } from '../utils/notifications';
+import { useSettingStore } from './useSettingStore';
 
 interface TimerState extends BaseTimerState {
   // 初始时长（秒）
@@ -19,20 +20,27 @@ interface TimerState extends BaseTimerState {
   handleAppStateChange: (nextAppState: string) => void;
   setCurrentTaskId: (taskId: string | null) => void;
   completePomodoro: () => void;
+  updateDurations: () => void;
 }
 
-// 默认时长（秒）
-const DEFAULT_DURATIONS = {
-  focus: 25 * 60,
-  shortBreak: 5 * 60,
-  longBreak: 15 * 60,
-};
+// 获取当前模式的时长（从设置中读取）
+function getDurationForMode(mode: TimerMode): number {
+  const settings = useSettingStore.getState();
+  switch (mode) {
+    case 'focus':
+      return settings.focusDuration * 60;
+    case 'shortBreak':
+      return settings.shortBreakDuration * 60;
+    case 'longBreak':
+      return settings.longBreakDuration * 60;
+  }
+}
 
 export const useTimerStore = create<TimerState>((set, get) => ({
   // 初始状态
   mode: 'focus',
-  remainingSeconds: DEFAULT_DURATIONS.focus,
-  initialSeconds: DEFAULT_DURATIONS.focus,
+  remainingSeconds: getDurationForMode('focus'),
+  initialSeconds: getDurationForMode('focus'),
   isRunning: false,
   startTime: null,
   pausedAt: null,
@@ -128,7 +136,7 @@ export const useTimerStore = create<TimerState>((set, get) => ({
 
   // 设置模式
   setMode: (mode: TimerMode) => {
-    const duration = DEFAULT_DURATIONS[mode];
+    const duration = getDurationForMode(mode);
     const isRunning = get().isRunning;
 
     // 如果正在运行，先停止
@@ -146,6 +154,21 @@ export const useTimerStore = create<TimerState>((set, get) => ({
     });
 
     cancelAllNotifications();
+  },
+
+  // 更新时长（当设置改变时调用）
+  updateDurations: () => {
+    const { mode, isRunning } = get();
+
+    // 只有在计时器没有运行时才更新时长
+    // 如果正在运行，不中断用户的工作
+    if (!isRunning) {
+      const newDuration = getDurationForMode(mode);
+      set({
+        remainingSeconds: newDuration,
+        initialSeconds: newDuration,
+      });
+    }
   },
 
   // 直接设置剩余秒数

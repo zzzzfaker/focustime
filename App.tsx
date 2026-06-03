@@ -10,75 +10,86 @@ import TimerScreen from './src/screens/TimerScreen';
 import TasksScreen from './src/screens/TasksScreen';
 import StatsScreen from './src/screens/StatsScreen';
 import SettingsScreen from './src/screens/SettingsScreen';
+import { ThemeProvider, useTheme } from './src/contexts/ThemeContext';
 
 const Tab = createBottomTabNavigator();
+
+function AppContent() {
+  const { theme, isDark } = useTheme();
+
+  return (
+    <NavigationContainer>
+      <StatusBar style={isDark ? 'light' : 'dark'} />
+      <Tab.Navigator
+        screenOptions={{
+          headerShown: false,
+          tabBarStyle: {
+            backgroundColor: theme.tabBar.background,
+            borderTopWidth: 1,
+            borderTopColor: theme.tabBar.border,
+            height: 60,
+            paddingBottom: 8,
+            paddingTop: 8,
+          },
+          tabBarActiveTintColor: theme.tabBar.active,
+          tabBarInactiveTintColor: theme.tabBar.inactive,
+          tabBarLabelStyle: {
+            fontSize: 12,
+            fontWeight: '600',
+          },
+        }}
+      >
+        <Tab.Screen
+          name="Timer"
+          component={TimerScreen}
+          options={{
+            tabBarLabel: '计时器',
+            tabBarIcon: ({ color, size }) => (
+              <TabIcon name="timer" color={color} size={size} />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="Tasks"
+          component={TasksScreen}
+          options={{
+            tabBarLabel: '任务',
+            tabBarIcon: ({ color, size }) => (
+              <TabIcon name="tasks" color={color} size={size} />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="Stats"
+          component={StatsScreen}
+          options={{
+            tabBarLabel: '统计',
+            tabBarIcon: ({ color, size }) => (
+              <TabIcon name="stats" color={color} size={size} />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="Settings"
+          component={SettingsScreen}
+          options={{
+            tabBarLabel: '设置',
+            tabBarIcon: ({ color, size }) => (
+              <TabIcon name="settings" color={color} size={size} />
+            ),
+          }}
+        />
+      </Tab.Navigator>
+    </NavigationContainer>
+  );
+}
 
 export default function App() {
   return (
     <SafeAreaProvider>
-      <NavigationContainer>
-        <StatusBar style="auto" />
-        <Tab.Navigator
-          screenOptions={{
-            headerShown: false,
-            tabBarStyle: {
-              backgroundColor: '#FFFFFF',
-              borderTopWidth: 1,
-              borderTopColor: '#E0E0E0',
-              height: 60,
-              paddingBottom: 8,
-              paddingTop: 8,
-            },
-            tabBarActiveTintColor: '#FF6B6B',
-            tabBarInactiveTintColor: '#999',
-            tabBarLabelStyle: {
-              fontSize: 12,
-              fontWeight: '600',
-            },
-          }}
-        >
-          <Tab.Screen
-            name="Timer"
-            component={TimerScreen}
-            options={{
-              tabBarLabel: '计时器',
-              tabBarIcon: ({ color, size }) => (
-                <TabIcon name="timer" color={color} size={size} />
-              ),
-            }}
-          />
-          <Tab.Screen
-            name="Tasks"
-            component={TasksScreen}
-            options={{
-              tabBarLabel: '任务',
-              tabBarIcon: ({ color, size }) => (
-                <TabIcon name="tasks" color={color} size={size} />
-              ),
-            }}
-          />
-          <Tab.Screen
-            name="Stats"
-            component={StatsScreen}
-            options={{
-              tabBarLabel: '统计',
-              tabBarIcon: ({ color, size }) => (
-                <TabIcon name="stats" color={color} size={size} />
-              ),
-            }}
-          />
-          <Tab.Screen
-            name="Settings"
-            component={SettingsScreen}
-            options={{
-              tabBarLabel: '设置',
-              tabBarIcon: ({ color, size }) => (
-                <TabIcon name="settings" color={color} size={size} />
-              ),
-            }}
-          />
-        </Tab.Navigator>
-      </NavigationContainer>
+      <ThemeProvider>
+        <AppContent />
+      </ThemeProvider>
     </SafeAreaProvider>
   );
 }

@@ -12,10 +12,142 @@ import {
 } from 'react-native';
 import { useTaskStore } from '../store/useTaskStore';
 import { useTimerStore } from '../store/useTimerStore';
+import { useTheme } from '../contexts/ThemeContext';
 import TaskItem from '../components/TaskItem';
 import { Task } from '../types';
 
+// 创建动态样式函数
+const createStyles = (theme: any) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.background,
+    },
+    addButton: {
+      backgroundColor: theme.primary,
+      margin: 16,
+      padding: 16,
+      borderRadius: 12,
+      alignItems: 'center',
+    },
+    addButtonText: {
+      color: '#FFFFFF',
+      fontSize: 16,
+      fontWeight: 'bold',
+    },
+    listContent: {
+      paddingVertical: 8,
+    },
+    emptyContainer: {
+      alignItems: 'center',
+      paddingVertical: 60,
+    },
+    emptyText: {
+      fontSize: 18,
+      color: theme.textSecondary,
+      marginBottom: 8,
+    },
+    emptySubtext: {
+      fontSize: 14,
+      color: theme.textSecondary,
+    },
+    completedHeader: {
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+      backgroundColor: theme.border,
+    },
+    completedHeaderText: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: theme.textSecondary,
+    },
+    modalOverlay: {
+      flex: 1,
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      justifyContent: 'center',
+      padding: 20,
+    },
+    modalContent: {
+      backgroundColor: theme.card,
+      borderRadius: 16,
+      padding: 20,
+    },
+    modalTitle: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      color: theme.text,
+      marginBottom: 20,
+    },
+    input: {
+      backgroundColor: theme.border,
+      borderRadius: 8,
+      padding: 12,
+      fontSize: 16,
+      marginBottom: 16,
+      color: theme.text,
+    },
+    pomodoroSelector: {
+      marginBottom: 20,
+    },
+    pomodoroLabel: {
+      fontSize: 14,
+      color: theme.textSecondary,
+      marginBottom: 8,
+    },
+    pomodoroButtons: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: 8,
+    },
+    pomodoroButton: {
+      width: 50,
+      height: 50,
+      borderRadius: 25,
+      backgroundColor: theme.border,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    pomodoroButtonActive: {
+      backgroundColor: theme.primary,
+    },
+    pomodoroButtonText: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: theme.textSecondary,
+    },
+    pomodoroButtonTextActive: {
+      color: '#FFFFFF',
+    },
+    modalButtons: {
+      flexDirection: 'row',
+      gap: 12,
+    },
+    modalButton: {
+      flex: 1,
+      padding: 14,
+      borderRadius: 8,
+      alignItems: 'center',
+    },
+    modalButtonCancel: {
+      backgroundColor: theme.border,
+    },
+    modalButtonConfirm: {
+      backgroundColor: theme.primary,
+    },
+    modalButtonText: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: theme.text,
+    },
+    modalButtonTextConfirm: {
+      color: '#FFFFFF',
+    },
+  });
+
 const TasksScreen: React.FC = () => {
+  const { theme } = useTheme();
+  const styles = createStyles(theme);
+
   const { tasks, currentTaskId, addTask, deleteTask, updateTask, setCurrentTask } = useTaskStore();
   const { currentTaskId: timerTaskId, setCurrentTaskId: setTimerCurrentTaskId } = useTimerStore();
 
@@ -178,6 +310,7 @@ const TasksScreen: React.FC = () => {
             <TextInput
               style={styles.input}
               placeholder="任务标题"
+              placeholderTextColor={theme.textSecondary}
               value={taskTitle}
               onChangeText={setTaskTitle}
               autoFocus
@@ -246,6 +379,7 @@ const TasksScreen: React.FC = () => {
             <TextInput
               style={styles.input}
               placeholder="任务标题"
+              placeholderTextColor={theme.textSecondary}
               value={editTitle}
               onChangeText={setEditTitle}
             />
@@ -297,130 +431,5 @@ const TasksScreen: React.FC = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F8F9FA',
-  },
-  addButton: {
-    backgroundColor: '#FF6B6B',
-    margin: 16,
-    padding: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-  },
-  addButtonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  listContent: {
-    paddingVertical: 8,
-  },
-  emptyContainer: {
-    alignItems: 'center',
-    paddingVertical: 60,
-  },
-  emptyText: {
-    fontSize: 18,
-    color: '#999',
-    marginBottom: 8,
-  },
-  emptySubtext: {
-    fontSize: 14,
-    color: '#BBB',
-  },
-  completedHeader: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    backgroundColor: '#E8E8E8',
-  },
-  completedHeaderText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#666',
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    padding: 20,
-  },
-  modalContent: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 20,
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 20,
-  },
-  input: {
-    backgroundColor: '#F5F5F5',
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    marginBottom: 16,
-  },
-  pomodoroSelector: {
-    marginBottom: 20,
-  },
-  pomodoroLabel: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 8,
-  },
-  pomodoroButtons: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  pomodoroButton: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: '#F5F5F5',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  pomodoroButtonActive: {
-    backgroundColor: '#FF6B6B',
-  },
-  pomodoroButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#666',
-  },
-  pomodoroButtonTextActive: {
-    color: '#FFFFFF',
-  },
-  modalButtons: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  modalButton: {
-    flex: 1,
-    padding: 14,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  modalButtonCancel: {
-    backgroundColor: '#E0E0E0',
-  },
-  modalButtonConfirm: {
-    backgroundColor: '#FF6B6B',
-  },
-  modalButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
-  },
-  modalButtonTextConfirm: {
-    color: '#FFFFFF',
-  },
-});
 
 export default TasksScreen;
